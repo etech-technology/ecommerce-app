@@ -1,12 +1,10 @@
 image:
   repository: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/<ECR_REPO>
-  tag: "latest"  # CI sets to "<sha>-blessed"
+  tag: "" # CI sets to "<sha>-blessed"
   pullPolicy: IfNotPresent
-
 service:
   type: ClusterIP
   port: 80
-
 ingress:
   enabled: true
   className: alb
@@ -24,7 +22,6 @@ ingress:
         - path: /
           pathType: Prefix
   tls: []
-
 resources:
   limits:
     cpu: 200m
@@ -32,15 +29,12 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-
 replicaCount: 2
-
 securityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
   runAsNonRoot: true
-
 containerSecurityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
@@ -48,7 +42,6 @@ containerSecurityContext:
     drop: ["ALL"]
   seccompProfile:
     type: RuntimeDefault
-
 podAnnotations:
   prometheus.io/scrape: "true"
   prometheus.io/port: "3000"
