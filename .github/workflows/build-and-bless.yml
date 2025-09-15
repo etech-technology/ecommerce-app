@@ -1,4 +1,4 @@
-name: Build & Publish → Snyk → Bless → Helm Bump
+name: Build → ECR → Snyk → Bless → Bump Helm
 
 on:
   push:
@@ -40,12 +40,18 @@ jobs:
           docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:${IMAGE_SHA}"
 
       - name: Snyk scan (ECR image)
-        uses: snyk/actions/docker@v3
+        uses: snyk/actions/docker@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${{ env.IMAGE_SHA }}
           args: --severity-threshold=high --fail-on=all
+
+      # Needed because scripts/snyk_scan_and_bless.sh calls the Snyk CLI
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Bless image (retag to -blessed)
         run: |
@@ -55,7 +61,7 @@ jobs:
       - name: Install yq (static binary)
         run: |
           YQ_VERSION=v4.44.3
-          wget -q https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -O yq
+          wget -q "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -O yq
           sudo install -m 0755 yq /usr/local/bin/yq
 
       - name: Update Helm values.yaml with blessed tag
@@ -71,4 +77,5 @@ jobs:
           git add charts/ecommerce-app/values.yaml
           git commit -m "ci: bump image tag to ${IMAGE_SHA}-blessed [skip ci]" || echo "No changes"
           git push
+
 
