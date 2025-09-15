@@ -53,6 +53,9 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+      - name: Snyk auth
+        run: snyk auth "${{ secrets.SNYK_TOKEN }}"
+
       - name: Bless image (retag to -blessed)
         run: |
           chmod +x scripts/snyk_scan_and_bless.sh
