@@ -1,7 +1,7 @@
 # DevSecOps E2E Starter — FastAPI • GitHub Actions • ECR • Snyk • Helm • ArgoCD • EKS • Prometheus/Grafana • ALB+ACM
 **Date:** 2025-09-11
 
-Turn‑key teaching repo arranged so you can start implementing immediately:
+## Etechdevops MasterClass:
 
 - App: **FastAPI** e‑commerce demo (receipt UI + `/metrics`)
 - CI/CD: **GitHub Actions** → build & push to **ECR** → **Snyk** scan → bless tag → bump Helm values
